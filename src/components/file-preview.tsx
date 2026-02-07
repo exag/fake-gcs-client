@@ -29,9 +29,9 @@ export function FilePreview({
 
   if (isImageType(contentType)) {
     return (
-      <div className="rounded-md border bg-muted/30 p-2">
+      <div className="h-full rounded-md border bg-muted/30 p-2">
         {/* biome-ignore lint/performance/noImgElement: dynamic URL from GCS, not optimizable by next/image */}
-        <img src={downloadUrl} alt={objectName} className="max-h-64 w-full object-contain" />
+        <img src={downloadUrl} alt={objectName} className="max-h-full w-full object-contain" />
       </div>
     );
   }
@@ -42,8 +42,8 @@ export function FilePreview({
 
   if (contentType === "application/pdf") {
     return (
-      <div className="rounded-md border">
-        <iframe title="PDF preview" src={downloadUrl} className="h-64 w-full" />
+      <div className="h-full rounded-md border">
+        <iframe title="PDF preview" src={downloadUrl} className="h-full w-full" />
       </div>
     );
   }
@@ -68,7 +68,7 @@ function TextPreview({ url }: { url: string }) {
   if (content === null) return <p className="text-sm text-muted-foreground">Failed to load</p>;
 
   return (
-    <pre className="max-h-64 overflow-auto rounded-md border bg-muted/30 p-3 text-xs">
+    <pre className="max-h-full overflow-auto rounded-md border bg-muted/30 p-3 text-xs">
       <code>{content}</code>
     </pre>
   );

@@ -71,21 +71,29 @@ export function DetailDrawer({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[400px] overflow-y-auto sm:w-[500px]">
+        <SheetContent className="flex w-[540px] max-w-[640px] flex-col overflow-hidden sm:max-w-[640px]">
           <SheetHeader>
             <SheetTitle className="truncate">{fileName}</SheetTitle>
             <SheetDescription className="truncate">{object.name}</SheetDescription>
           </SheetHeader>
 
-          <div className="mt-6 space-y-6">
-            <FilePreview
-              bucket={bucket}
-              objectName={object.name}
-              contentType={object.contentType}
-            />
+          <div className="shrink-0 space-y-4 px-6">
+            <div className="flex gap-2">
+              <Button asChild variant="outline" className="flex-1">
+                <a href={downloadUrl} download={fileName}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </a>
+              </Button>
+              <Button variant="destructive" className="flex-1" onClick={() => setConfirmOpen(true)}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            </div>
 
             <Separator />
 
+            <h3 className="text-sm font-semibold">Metadata</h3>
             <div className="space-y-1 text-sm">
               <MetadataRow label="Name" value={object.name} />
               <MetadataRow label="Size" value={formatBytes(Number(object.size))} />
@@ -98,20 +106,18 @@ export function DetailDrawer({
               <MetadataRow label="ETag" value={object.etag} />
               <MetadataRow label="Generation" value={object.generation} />
             </div>
+          </div>
 
-            <Separator />
+          <Separator />
 
-            <div className="flex gap-2">
-              <Button asChild variant="outline" className="flex-1">
-                <a href={downloadUrl} download={fileName}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </a>
-              </Button>
-              <Button variant="destructive" className="flex-1" onClick={() => setConfirmOpen(true)}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </Button>
+          <div className="flex min-h-0 flex-1 flex-col px-6 pb-6">
+            <h3 className="mb-2 shrink-0 text-sm font-semibold">Preview</h3>
+            <div className="min-h-0 flex-1">
+              <FilePreview
+                bucket={bucket}
+                objectName={object.name}
+                contentType={object.contentType}
+              />
             </div>
           </div>
         </SheetContent>
