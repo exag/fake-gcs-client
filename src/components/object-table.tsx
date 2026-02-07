@@ -10,15 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatBytes } from "@/lib/format";
 import type { GcsObject } from "@/lib/types";
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
-}
 
 function formatDate(dateStr?: string): string {
   if (!dateStr) return "-";
@@ -77,7 +70,19 @@ export function ObjectTable({
         {objects.map((obj) => {
           const displayName = currentPrefix ? obj.name.replace(currentPrefix, "") : obj.name;
           return (
-            <TableRow key={obj.name} className="cursor-pointer" onClick={() => onObjectClick(obj)}>
+            <TableRow
+              key={obj.name}
+              className="cursor-pointer"
+              tabIndex={0}
+              role="button"
+              onClick={() => onObjectClick(obj)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onObjectClick(obj);
+                }
+              }}
+            >
               <TableCell>
                 <div className="flex items-center gap-2 text-sm">
                   <FileText className="h-4 w-4 text-muted-foreground" />

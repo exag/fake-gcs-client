@@ -15,15 +15,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { encodePath, formatBytes } from "@/lib/format";
 import type { GcsObject } from "@/lib/types";
-
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
-}
 
 function MetadataRow({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
@@ -53,14 +46,14 @@ export function DetailDrawer({
   if (!object) return null;
 
   const fileName = object.name.split("/").pop() || object.name;
-  const downloadUrl = `/api/download/${encodeURIComponent(bucket)}/${object.name.split("/").map(encodeURIComponent).join("/")}`;
+  const downloadUrl = `/api/download/${encodeURIComponent(bucket)}/${encodePath(object.name)}`;
 
   async function handleDelete() {
     if (!object) return;
     setDeleting(true);
     try {
       const res = await fetch(
-        `/api/objects/${encodeURIComponent(bucket)}/${object.name.split("/").map(encodeURIComponent).join("/")}`,
+        `/api/objects/${encodeURIComponent(bucket)}/${encodePath(object.name)}`,
         { method: "DELETE" },
       );
       if (!res.ok) throw new Error("Failed to delete");
