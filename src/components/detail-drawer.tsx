@@ -7,7 +7,13 @@ import { toast } from "sonner";
 import { FilePreview } from "@/components/file-preview";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import type { GcsObject } from "@/lib/types";
 
 function formatBytes(bytes: number): string {
@@ -71,6 +77,7 @@ export function DetailDrawer({
       <SheetContent className="w-[400px] overflow-y-auto sm:w-[500px]">
         <SheetHeader>
           <SheetTitle className="truncate">{fileName}</SheetTitle>
+          <SheetDescription className="truncate">{object.name}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">

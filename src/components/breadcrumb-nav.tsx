@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,16 +24,18 @@ export function BreadcrumbNav({ bucket, prefix }: { bucket: string; prefix?: str
           const path = segments.slice(0, i + 1).join("/");
           const isLast = i === segments.length - 1;
           return (
-            <BreadcrumbItem key={path}>
+            <Fragment key={path}>
               <BreadcrumbSeparator />
-              {isLast ? (
-                <BreadcrumbPage>{segment}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink asChild>
-                  <Link href={`/${encodeURIComponent(bucket)}/${path}`}>{segment}</Link>
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
+              <BreadcrumbItem>
+                {isLast ? (
+                  <BreadcrumbPage>{segment}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild>
+                    <Link href={`/${encodeURIComponent(bucket)}/${path}`}>{segment}</Link>
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </Fragment>
           );
         })}
       </BreadcrumbList>
