@@ -7,8 +7,5 @@ export function formatBytes(bytes: number): string {
 }
 
 export function encodePath(name: string): string {
-  return name
-    .split("/")
-    .map(encodeURIComponent)
-    .join("/");
+  return name.split("/").map(encodeURIComponent).join("/");
 }

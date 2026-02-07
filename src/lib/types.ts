@@ -4,7 +4,10 @@ export const BucketNameSchema = z
   .string()
   .min(3, "Bucket name must be at least 3 characters")
   .max(63, "Bucket name must be at most 63 characters")
-  .regex(/^[a-z0-9][a-z0-9._-]*[a-z0-9]$/, "Bucket name must start and end with a letter or number, and contain only lowercase letters, numbers, hyphens, dots, or underscores");
+  .regex(
+    /^[a-z0-9][a-z0-9._-]*[a-z0-9]$/,
+    "Bucket name must start and end with a letter or number, and contain only lowercase letters, numbers, hyphens, dots, or underscores",
+  );
 
 export const BucketSchema = z.object({
   kind: z.literal("storage#bucket"),
