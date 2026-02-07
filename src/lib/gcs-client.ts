@@ -83,7 +83,7 @@ export async function downloadObject(bucketName: string, objectName: string): Pr
 export async function uploadObject(
   bucketName: string,
   objectName: string,
-  body: ArrayBuffer | Uint8Array | ReadableStream,
+  body: BodyInit,
   contentType: string,
 ): Promise<GcsObject> {
   const params = new URLSearchParams({
