@@ -1,9 +1,16 @@
 "use client";
 
-import { Database, Plus, RefreshCw } from "lucide-react";
+import { Database, MoreHorizontal, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Bucket } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -18,6 +25,21 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const activeBucket = decodeURIComponent(pathname.split("/")[1] || "");
+
+  async function handleDeleteBucket(name: string) {
+    if (!confirm(`Delete bucket "${name}"? The bucket must be empty.`)) return;
+    try {
+      const res = await fetch(`/api/buckets?name=${encodeURIComponent(name)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete bucket");
+      toast.success(`Bucket "${name}" deleted`);
+      if (activeBucket === name) router.push("/");
+      router.refresh();
+    } catch {
+      toast.error("Failed to delete bucket. Make sure it is empty.");
+    }
+  }
 
   return (
     <aside className="flex h-full w-64 flex-col border-r bg-muted/30">
@@ -35,17 +57,41 @@ export function Sidebar({
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-1 p-2">
           {buckets.map((bucket) => (
-            <Link
+            <div
               key={bucket.name}
-              href={`/${encodeURIComponent(bucket.name)}`}
               className={cn(
-                "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent",
+                "group flex items-center rounded-md transition-colors hover:bg-accent",
                 activeBucket === bucket.name && "bg-accent font-medium",
               )}
             >
-              <Database className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{bucket.name}</span>
-            </Link>
+              <Link
+                href={`/${encodeURIComponent(bucket.name)}`}
+                className="flex flex-1 items-center gap-2 px-3 py-2 text-sm"
+              >
+                <Database className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <span className="truncate">{bucket.name}</span>
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="mr-1 h-6 w-6 opacity-0 group-hover:opacity-100"
+                  >
+                    <MoreHorizontal className="h-3.5 w-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => handleDeleteBucket(bucket.name)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete bucket
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ))}
           {buckets.length === 0 && (
             <p className="px-3 py-2 text-sm text-muted-foreground">No buckets found</p>
