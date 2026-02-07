@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -62,6 +63,7 @@ export function UploadDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload Files</DialogTitle>
+          <DialogDescription>Select files to upload to this bucket.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           {prefix && (

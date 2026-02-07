@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -48,6 +49,7 @@ export function CreateBucketDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Bucket</DialogTitle>
+          <DialogDescription>Enter a name for the new bucket.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <Input
