@@ -4,6 +4,7 @@ import { Download, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { FilePreview } from "@/components/file-preview";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -47,6 +48,7 @@ export function DetailDrawer({
 }) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   if (!object) return null;
 
@@ -63,6 +65,7 @@ export function DetailDrawer({
       );
       if (!res.ok) throw new Error("Failed to delete");
       toast.success("Object deleted");
+      setConfirmOpen(false);
       onOpenChange(false);
       router.refresh();
     } catch {
@@ -73,52 +76,61 @@ export function DetailDrawer({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] overflow-y-auto sm:w-[500px]">
-        <SheetHeader>
-          <SheetTitle className="truncate">{fileName}</SheetTitle>
-          <SheetDescription className="truncate">{object.name}</SheetDescription>
-        </SheetHeader>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent className="w-[400px] overflow-y-auto sm:w-[500px]">
+          <SheetHeader>
+            <SheetTitle className="truncate">{fileName}</SheetTitle>
+            <SheetDescription className="truncate">{object.name}</SheetDescription>
+          </SheetHeader>
 
-        <div className="mt-6 space-y-6">
-          <FilePreview bucket={bucket} objectName={object.name} contentType={object.contentType} />
+          <div className="mt-6 space-y-6">
+            <FilePreview
+              bucket={bucket}
+              objectName={object.name}
+              contentType={object.contentType}
+            />
 
-          <Separator />
+            <Separator />
 
-          <div className="space-y-1 text-sm">
-            <MetadataRow label="Name" value={object.name} />
-            <MetadataRow label="Size" value={formatBytes(Number(object.size))} />
-            <MetadataRow label="Content Type" value={object.contentType} />
-            <MetadataRow label="Created" value={object.timeCreated} />
-            <MetadataRow label="Updated" value={object.updated} />
-            <MetadataRow label="Storage Class" value={object.storageClass} />
-            <MetadataRow label="MD5" value={object.md5Hash} />
-            <MetadataRow label="CRC32C" value={object.crc32c} />
-            <MetadataRow label="ETag" value={object.etag} />
-            <MetadataRow label="Generation" value={object.generation} />
+            <div className="space-y-1 text-sm">
+              <MetadataRow label="Name" value={object.name} />
+              <MetadataRow label="Size" value={formatBytes(Number(object.size))} />
+              <MetadataRow label="Content Type" value={object.contentType} />
+              <MetadataRow label="Created" value={object.timeCreated} />
+              <MetadataRow label="Updated" value={object.updated} />
+              <MetadataRow label="Storage Class" value={object.storageClass} />
+              <MetadataRow label="MD5" value={object.md5Hash} />
+              <MetadataRow label="CRC32C" value={object.crc32c} />
+              <MetadataRow label="ETag" value={object.etag} />
+              <MetadataRow label="Generation" value={object.generation} />
+            </div>
+
+            <Separator />
+
+            <div className="flex gap-2">
+              <Button asChild variant="outline" className="flex-1">
+                <a href={downloadUrl} download={fileName}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </a>
+              </Button>
+              <Button variant="destructive" className="flex-1" onClick={() => setConfirmOpen(true)}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete
+              </Button>
+            </div>
           </div>
-
-          <Separator />
-
-          <div className="flex gap-2">
-            <Button asChild variant="outline" className="flex-1">
-              <a href={downloadUrl} download={fileName}>
-                <Download className="mr-2 h-4 w-4" />
-                Download
-              </a>
-            </Button>
-            <Button
-              variant="destructive"
-              className="flex-1"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {deleting ? "Deleting..." : "Delete"}
-            </Button>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
+      <ConfirmDeleteDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Delete object"
+        description={`Are you sure you want to delete "${fileName}"? This action cannot be undone.`}
+        onConfirm={handleDelete}
+        loading={deleting}
+      />
+    </>
   );
 }

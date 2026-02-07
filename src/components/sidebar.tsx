@@ -3,7 +3,9 @@
 import { Database, MoreHorizontal, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,19 +27,25 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const activeBucket = decodeURIComponent(pathname.split("/")[1] || "");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  async function handleDeleteBucket(name: string) {
-    if (!confirm(`Delete bucket "${name}"? The bucket must be empty.`)) return;
+  async function handleDeleteBucket() {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/buckets?name=${encodeURIComponent(name)}`, {
+      const res = await fetch(`/api/buckets?name=${encodeURIComponent(deleteTarget)}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed to delete bucket");
-      toast.success(`Bucket "${name}" deleted`);
-      if (activeBucket === name) router.push("/");
+      toast.success(`Bucket "${deleteTarget}" deleted`);
+      if (activeBucket === deleteTarget) router.push("/");
       router.refresh();
+      setDeleteTarget(null);
     } catch {
       toast.error("Failed to delete bucket. Make sure it is empty.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -84,7 +92,7 @@ export function Sidebar({
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem
                     className="text-destructive"
-                    onClick={() => handleDeleteBucket(bucket.name)}
+                    onClick={() => setDeleteTarget(bucket.name)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete bucket
@@ -98,6 +106,16 @@ export function Sidebar({
           )}
         </nav>
       </ScrollArea>
+      <ConfirmDeleteDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete bucket"
+        description={`Are you sure you want to delete "${deleteTarget}"? The bucket must be empty.`}
+        onConfirm={handleDeleteBucket}
+        loading={deleting}
+      />
     </aside>
   );
 }
