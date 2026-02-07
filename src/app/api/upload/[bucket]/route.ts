@@ -13,6 +13,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ buc
     return NextResponse.json({ error: "File is required" }, { status: 400 });
   }
 
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+  if (file.size > MAX_FILE_SIZE) {
+    return NextResponse.json({ error: "File size exceeds 100 MB limit" }, { status: 413 });
+  }
+
+  if (prefix && (prefix.includes("..") || prefix.startsWith("/"))) {
+    return NextResponse.json({ error: "Invalid prefix" }, { status: 400 });
+  }
+
   const objectName = prefix ? `${prefix}${file.name}` : file.name;
   const buffer = await file.arrayBuffer();
 

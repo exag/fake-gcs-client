@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { createBucket, deleteBucket } from "@/lib/gcs-client";
+import { BucketNameSchema } from "@/lib/types";
 
 export async function POST(request: Request) {
   const { name } = await request.json();
-  if (!name || typeof name !== "string") {
-    return NextResponse.json({ error: "Bucket name is required" }, { status: 400 });
+  const parsed = BucketNameSchema.safeParse(name);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   }
   try {
     const bucket = await createBucket(name);
