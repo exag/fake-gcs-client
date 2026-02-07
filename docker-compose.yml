@@ -1,0 +1,15 @@
+services:
+  fake-gcs-server:
+    image: fsouza/fake-gcs-server
+    command: -scheme http -port 4443
+    ports:
+      - "4443:4443"
+
+  fake-gcs-client:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - GCS_ENDPOINT=http://fake-gcs-server:4443
+    depends_on:
+      - fake-gcs-server
