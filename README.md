@@ -19,9 +19,9 @@ A web UI for [fake-gcs-server](https://github.com/fsouza/fake-gcs-server). Brows
 docker compose up
 ```
 
-This starts both `fake-gcs-server` on port 4443 and `fake-gcs-client` on port 3000.
+This starts both `fake-gcs-server` on port 4443 and `fake-gcs-client` on port 4442.
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:4442](http://localhost:4442).
 
 ### Development
 
@@ -35,7 +35,7 @@ bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:4442](http://localhost:4442).
 
 ## Configuration
 
